@@ -1,0 +1,53 @@
+{
+  "name": "picopak",
+  "version": "1.0.0",
+  "description": "Package Manager for Raspberry Pi Pico SDK - npm for Pico",
+  "main": "dist/index.js",
+  "bin": {
+    "picopak": "./bin/picopak.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "raspberry-pi",
+    "pico",
+    "rp2040",
+    "rp2350",
+    "package-manager",
+    "embedded",
+    "cmake",
+    "sdk"
+  ],
+  "author": "FastLED Project",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "extract-zip": "^2.0.1",
+    "figlet": "^1.7.0",
+    "gradient-string": "^2.0.2",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/extract-zip": "^2.0.0",
+    "@types/figlet": "^1.5.8",
+    "@types/gradient-string": "^1.1.6",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastLED/FastLED.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FastLED/FastLED/issues"
+  },
+  "homepage": "https://github.com/FastLED/FastLED#readme"
+}

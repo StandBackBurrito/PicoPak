@@ -1,0 +1,26 @@
+# Pico Pak
+
+# Dependencies / build output
+node_modules/
+dist/
+coverage/
+.nyc_output/
+
+# Logs / temp
+*.log
+*.tmp
+*.temp
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+
+# Package artifacts
+*.picopak
+examples/
+
+# Keep example packages for reference
+!examples/*.picopak
