@@ -40,4 +40,5 @@
 - CLI conventions:
   - Keep command surface in `src/index.ts` and implementation in `src/commands/*`
   - Keep splash rendering logic centralized in `src/utils/banner.ts`
+  - For branch/work item naming, prefer `devops/*` instead of `chore/*`
 - Cross-platform line endings are managed with `.gitattributes` (`* text=auto` with binary exceptions); do not hardcode per-file EOL assumptions.
