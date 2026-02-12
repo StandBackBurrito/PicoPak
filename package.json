@@ -46,10 +46,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/FastLED/FastLED.git"
+    "url": "https://github.com/StandBackBurrito/PicoPak.git"
   },
   "bugs": {
-    "url": "https://github.com/FastLED/FastLED/issues"
+    "url": "https://github.com/StandBackBurrito/PicoPak/issues"
   },
-  "homepage": "https://github.com/FastLED/FastLED#readme"
+  "homepage": "https://github.com/StandBackBurrito/PicoPak#readme"
 }

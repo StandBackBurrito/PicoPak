@@ -1,30 +1,53 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import extract from 'extract-zip';
+import { detectPlatform, resolvePackageInput } from '../utils/resolver';
+import { validateManifestForInstall } from '../utils/manifest';
 
 interface InstallOptions {
   projectDir?: string;
   list?: boolean;
+  version?: string;
+  includePrerelease?: boolean;
+  platform?: 'rp2040' | 'rp2350';
+  indexUrl?: string;
 }
 
-interface PackageMetadata {
-  name: string;
-  version: string;
-  description: string;
-  author: string;
-  license: string;
-  platforms: string[];
-}
+export async function installCommand(packageRef: string, options: InstallOptions): Promise<void> {
+  const projectDir = options.projectDir || process.cwd();
+  const selectedPlatform = options.platform || detectPlatform(projectDir);
+  let downloadedTempFile: string | undefined;
+  let packageFile = packageRef;
 
-export async function installCommand(packageFile: string, options: InstallOptions): Promise<void> {
+  try {
+    const resolvedPackage = await resolvePackageInput(packageRef, {
+      version: options.version,
+      includePrerelease: options.includePrerelease,
+      platform: selectedPlatform,
+      projectDir,
+      indexUrl: options.indexUrl
+    });
+    packageFile = resolvedPackage.packageFile;
+    downloadedTempFile = resolvedPackage.tempPath;
+    if (resolvedPackage.packageName) {
+      console.log(chalk.cyan(`Resolved ${resolvedPackage.packageName}@${resolvedPackage.version} (${resolvedPackage.platform})`));
+    }
+  } catch (error) {
+    console.log(chalk.red(`❌ Error: ${(error as Error).message}`));
+    process.exit(1);
+  }
+
   // Validate package file
   if (!fs.existsSync(packageFile)) {
     console.log(chalk.red('❌ Error: Package file not found:'), packageFile);
     console.log();
-    console.log(chalk.yellow('Usage: picopak install <package.picopak> [options]'));
-    console.log(chalk.gray('Example: picopak install FastLED-3.10.3-rp2040.picopak'));
+    console.log(chalk.yellow('Usage: picopak install <package|package.picopak> [options]'));
+    console.log(chalk.gray('Examples:'));
+    console.log(chalk.gray('  picopak install FastLED-3.10.3-rp2040.picopak'));
+    console.log(chalk.gray('  picopak install FastLED --platform rp2040'));
     process.exit(1);
   }
   
@@ -33,7 +56,7 @@ export async function installCommand(packageFile: string, options: InstallOption
     process.exit(1);
   }
   
-  const tempDir = path.join(process.env.TEMP || '/tmp', `picopak_${Date.now()}`);
+  const tempDir = path.join(os.tmpdir(), `picopak_${Date.now()}`);
   
   try {
     // Extract package
@@ -48,7 +71,8 @@ export async function installCommand(packageFile: string, options: InstallOption
       process.exit(1);
     }
     
-    const metadata: PackageMetadata = JSON.parse(fs.readFileSync(metadataFile, 'utf-8'));
+    const parsedMetadata = JSON.parse(fs.readFileSync(metadataFile, 'utf-8')) as unknown;
+    const metadata = validateMetadata(parsedMetadata);
     
     console.log();
     console.log(chalk.cyan('Package Information:'));
@@ -72,8 +96,6 @@ export async function installCommand(packageFile: string, options: InstallOption
     }
     
     // Install mode
-    const projectDir = options.projectDir || process.cwd();
-    
     if (!fs.existsSync(projectDir)) {
       console.log(chalk.red(`❌ Error: Project directory does not exist: ${projectDir}`));
       process.exit(1);
@@ -150,6 +172,21 @@ export async function installCommand(packageFile: string, options: InstallOption
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
+    if (downloadedTempFile && fs.existsSync(downloadedTempFile)) {
+      fs.rmSync(downloadedTempFile, { force: true });
+    }
+  }
+}
+
+function validateMetadata(metadata: unknown) {
+  try {
+    return validateManifestForInstall(metadata);
+  } catch (error) {
+    console.log(chalk.red('❌ Error: Invalid package metadata (picopak.json)'));
+    if (error instanceof Error) {
+      console.log(chalk.gray(error.message));
+    }
+    process.exit(1);
   }
 }
 
