@@ -14,9 +14,11 @@
 
 - PicoPak is a Node.js/TypeScript CLI that installs `.picopak` packages into Pico SDK projects.
 - Entrypoint: `src/index.ts`
-  - Defines commands via Commander (`install`, `version`, `banner`)
+  - Defines commands via Commander (`install`, `pack`, `list`, `search`, `remove`/`uninstall`, `version`, `banner`)
   - Applies splash behavior before command execution
 - Install pipeline: `src/commands/install.ts`
+  - Resolves package name installs to latest stable by default (or pinned `--version`; prerelease via `--include-prerelease`)
+  - Supports `--platform` and `--index-url` overrides (`--index-url` or env: `PICO_PAK_INDEX_URLS` / `PICO_PAK_INDEX_URL`)
   - Validates package path and extension
   - Extracts archive to a temp directory
   - Reads `picopak.json` metadata

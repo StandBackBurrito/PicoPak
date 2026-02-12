@@ -43,14 +43,19 @@ node dist/index.js version
 # Show awesome animated banner
 picopak banner
 
-# Install a package
-picopak install FastLED-3.10.3-rp2040.picopak
+# Install latest stable release by package name
+picopak install FastLED
 
-# List package contents
-picopak install FastLED-3.10.3-rp2040.picopak --list
+# Install a specific version (supports prerelease with --include-prerelease)
+picopak install FastLED --version 3.10.3 --platform rp2040
 
-# Show version
-picopak version
+# Search and list/remove packages
+picopak search fastled
+picopak list
+picopak remove FastLED
+
+# Prepare non-destructive index update bundle from pack metadata
+picopak submit .\dist\MyLibrary-1.0.0.picopak.metadata.json --dry-run
 
 # Get help
 picopak help
@@ -146,26 +151,59 @@ Done! 🎉
 
 ## 🎨 Commands
 
-### `picopak install <package>`
+### `picopak install <name|package.picopak>`
 
-Install a .picopak package to your project.
+Install from a package name (default resolves latest stable release for your platform) or from a local `.picopak` file.
 
 **Options:**
 - `--project-dir <path>` - Target project directory (default: current directory)
 - `--list` - List package contents without installing
+- `--version <value>` - Pin package version when installing by name
+- `--include-prerelease` - Allow prerelease selection when resolving latest
+- `--platform <platform>` - Target platform override (`rp2040` or `rp2350`)
+- `--index-url <url>` - Override package index URL for this command
 
 **Examples:**
 
 ```bash
-# Install to current directory
+# Install latest stable by package name
+picopak install FastLED
+
+# Install pinned version for a specific platform
+picopak install FastLED --version 3.10.3 --platform rp2040
+
+# Install from local file
 picopak install FastLED-3.10.3-rp2040.picopak
 
-# Install to specific project
-picopak install FastLED-3.10.3-rp2040.picopak --project-dir ~/my-pico-project
-
-# Preview package contents
+# Preview package contents from local file
 picopak install FastLED-3.10.3-rp2040.picopak --list
 ```
+
+Index URL can be provided with `--index-url` or environment variables (`PICO_PAK_INDEX_URLS`, `PICO_PAK_INDEX_URL`).
+
+### `picopak search <query>`
+
+Search packages from the remote index. Supports `--index-url <url>`.
+
+### `picopak list`
+
+List installed packages in `libs/`.
+
+### `picopak remove <package>` / `picopak uninstall <package>`
+
+Remove an installed package from `libs/`.
+
+### `picopak pack <sourceDir>`
+
+Build a `.picopak` archive from a package source directory.
+Also emits deterministic index metadata at `<artifact>.metadata.json` next to the archive.
+Use `--output-dir <path>` to place both files in a specific directory.
+
+### `picopak submit <input>`
+
+Prepare a non-destructive helper bundle for publishing a packed artifact to an index repository.
+Input can be either a `.picopak` file (with sibling `.metadata.json`) or the metadata file directly.
+The helper validates artifact checksums, enforces immutable-version checks when `--index-file` is provided, and emits `index-entry.json` plus step-by-step submission instructions.
 
 ### `picopak version`
 
