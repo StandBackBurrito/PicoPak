@@ -290,5 +290,5 @@ export async function playSplashAnimated(opts: SplashOptions = {}): Promise<numb
 export function renderVersionDetails(): void {
   console.log(color('Package Format: .picopak v1.0', 'label'));
   console.log(color('Supported Platforms: RP2040, RP2350', 'panel'));
-  console.log(color('Repository: https://github.com/FastLED/FastLED', 'panel'));
+  console.log(color('Repository: https://github.com/StandBackBurrito/PicoPak', 'panel'));
 }
