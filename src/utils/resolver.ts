@@ -111,6 +111,7 @@ export function detectPlatform(projectDir: string): Platform {
     }
   }
 
+  console.warn('Platform not detected. Defaulting to rp2040. Set PICO_PLATFORM env var or use --platform to override.');
   return 'rp2040';
 }
 
@@ -155,7 +156,8 @@ async function resolveRemoteRelease(packageName: string, options: Required<Pick<
     }
   }
 
-  throw new Error(`Unable to resolve package "${packageName}". ${lastError}`);
+  const attemptedIndexes = indexUrls.length > 1 ? ` (tried ${indexUrls.length} index URLs)` : '';
+  throw new Error(`Unable to resolve package "${packageName}"${attemptedIndexes}. Last error: ${lastError}`);
 }
 
 export function getIndexUrls(explicitUrl?: string): string[] {
@@ -350,6 +352,8 @@ async function downloadReleasePackage(release: ResolvedRelease): Promise<string>
 
   if (release.checksum) {
     verifyChecksum(tempFile, release.checksum);
+  } else {
+    console.warn('Warning: No checksum provided for downloaded package. Integrity cannot be verified.');
   }
 
   return tempFile;

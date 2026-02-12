@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -55,7 +56,7 @@ export async function installCommand(packageRef: string, options: InstallOptions
     process.exit(1);
   }
   
-  const tempDir = path.join(process.env.TEMP || '/tmp', `picopak_${Date.now()}`);
+  const tempDir = path.join(os.tmpdir(), `picopak_${Date.now()}`);
   
   try {
     // Extract package
